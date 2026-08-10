@@ -1,9 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/cart_item.dart';
 
-/// Panier local, équivalent du panier stocké en localStorage dans
-/// public/js/app.js (ITEMS_KEY). Pas d'API commande côté serveur pour
-/// l'instant : le panier reste local à l'appareil.
 class CartService extends ChangeNotifier {
   final List<CartItem> _items = [];
 
@@ -11,19 +8,32 @@ class CartService extends ChangeNotifier {
   int get itemCount => _items.fold(0, (sum, i) => sum + i.quantity);
   num get total => _items.fold(0, (sum, i) => sum + i.total);
 
-  void add(String name, String category, num price) {
+  bool get requiresPrescription => _items.any((item) => item.needsPrescription);
+
+  void add(String name, String category, num price, bool needsPrescription, int maxStock) {
     final existing = _items.where((i) => i.name == name).toList();
     if (existing.isNotEmpty) {
-      existing.first.quantity++;
+      if (existing.first.quantity < maxStock) {
+        existing.first.quantity++;
+      }
     } else {
-      _items.add(CartItem(name: name, category: category, price: price));
+      if (maxStock > 0) {
+        _items.add(CartItem(
+          name: name, 
+          category: category, 
+          price: price, 
+          needsPrescription: needsPrescription
+        ));
+      }
     }
     notifyListeners();
   }
 
-  void increment(CartItem item) {
-    item.quantity++;
-    notifyListeners();
+  void increment(CartItem item, int maxStock) {
+    if (item.quantity < maxStock) {
+      item.quantity++;
+      notifyListeners();
+    }
   }
 
   void decrement(CartItem item) {

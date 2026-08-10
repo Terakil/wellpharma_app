@@ -1,0 +1,90 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../config/formatters.dart';
+import '../../config/theme.dart';
+import '../../services/api_service.dart';
+import '../../services/session_service.dart';
+import 'package:intl/intl.dart';
+
+class OrderHistoryScreen extends StatelessWidget {
+  const OrderHistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final session = context.watch<SessionService>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textDim = isDark ? AppColors.textDimDark : AppColors.textDimLight;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mon historique d\'achats'),
+      ),
+      body: FutureBuilder<List<dynamic>>(
+        future: ApiService().getOrderHistory(session.email ?? ''),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (snapshot.hasError) {
+            return Center(child: Text('Erreur: ${snapshot.error}', style: const TextStyle(color: AppColors.accentRed)));
+          }
+
+          final orders = snapshot.data ?? [];
+
+          if (orders.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.history, size: 64, color: textDim.withValues(alpha: 0.5)),
+                  const SizedBox(height: 16),
+                  Text('Aucun achat enregistré.', style: TextStyle(color: textDim)),
+                ],
+              ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(20),
+            itemCount: orders.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, i) {
+              final order = orders[i];
+              final date = DateTime.parse(order['date']);
+              final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(date);
+
+              return Card(
+                child: ListTile(
+                  leading: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: order['image_url'] != null 
+                      ? ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network(order['image_url'], fit: BoxFit.cover))
+                      : const Icon(Icons.medication, color: AppColors.primary),
+                  ),
+                  title: Text(order['designation'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Quantité: ${order['quantite']}', style: TextStyle(fontSize: 12, color: textDim)),
+                      Text(dateStr, style: TextStyle(fontSize: 11, color: textDim)),
+                    ],
+                  ),
+                  trailing: Text(
+                    formatAr(num.parse(order['prix_total'].toString())),
+                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}

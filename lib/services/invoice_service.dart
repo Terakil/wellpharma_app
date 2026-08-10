@@ -3,26 +3,51 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../models/cart_item.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class InvoiceService {
-  /// Génère un ticket de caisse étroit (80mm)
+  /// Génère un ticket de caisse étroit (80mm) avec logos
   static Future<void> generateAndPrintInvoice(List<CartItem> items, double total) async {
     final pdf = pw.Document();
     final now = DateTime.now();
     final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(now);
 
+    // Chargement des logos
+    final logoImage = pw.MemoryImage(
+      (await rootBundle.load('assets/images/logo.png')).buffer.asUint8List(),
+    );
+    final logo2Image = pw.MemoryImage(
+      (await rootBundle.load('assets/images/logo2.png')).buffer.asUint8List(),
+    );
+    final logoIspmImage = pw.MemoryImage(
+      (await rootBundle.load('assets/images/logo_ispm.png')).buffer.asUint8List(),
+    );
+
     pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.roll80, // Format ticket de caisse
+        pageFormat: PdfPageFormat.roll80,
         margin: const pw.EdgeInsets.all(10),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Row(
+                    children: [
+                      pw.Image(logoImage, height: 20),
+                      pw.SizedBox(width: 4),
+                      pw.Image(logo2Image, height: 20),
+                    ],
+                  ),
+                  pw.Image(logoIspmImage, height: 20),
+                ],
+              ),
+              pw.SizedBox(height: 10),
               pw.Center(
                 child: pw.Column(
                   children: [
-                    pw.Text("WELLPHARMA", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
                     pw.Text("Votre santé, notre priorité", style: const pw.TextStyle(fontSize: 8)),
                     pw.SizedBox(height: 5),
                     pw.Text("TICKET DE CAISSE", style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),

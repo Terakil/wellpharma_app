@@ -35,7 +35,21 @@ class _ApiSettingsScreenState extends State<ApiSettingsScreen> {
     final textMain = isDark ? AppColors.textMainDark : AppColors.textMainLight;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Configuration API')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset('assets/images/logo.png', height: 40),
+            const SizedBox(width: 8),
+            Image.asset('assets/images/logo2.png', height: 40),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Image.asset('assets/images/logo_ispm.png', height: 40),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -63,7 +77,7 @@ class _ApiSettingsScreenState extends State<ApiSettingsScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.accentBlue.withOpacity(0.1),
+              color: AppColors.accentBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(

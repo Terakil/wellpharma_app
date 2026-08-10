@@ -11,12 +11,4 @@ class DemoProduct {
   const DemoProduct(this.name, this.category, this.desc, this.price);
 }
 
-const List<DemoProduct> demoPopularProducts = [
-  DemoProduct('Doliprane 1000mg', 'Antalgique', 'Douleur et fièvre', 2000),
-  DemoProduct('Fervex', 'Anti-grippe', 'Douleur et fièvre', 2000),
-  DemoProduct('Paracétamol 500mg', 'Antalgique / Antipyrétique', 'Douleur et fièvre', 1000),
-  DemoProduct('Vitascorbol 500mg', 'Vitamines', 'Fatigue, renforcement immunitaire', 15000),
-  DemoProduct('Amoxicilline 500mg', 'Antibiotique', 'Infections bactériennes', 1000),
-];
-
 const List<String> categories = ['Médicaments', 'Homeopharma', 'Bébé'];

@@ -6,6 +6,8 @@ class Product {
   final String reference;
   final String description;
   final String categorie;
+  final String imageUrl;
+  final bool needsPrescription; // Nouveau champ
 
   Product({
     this.idProduit,
@@ -15,6 +17,8 @@ class Product {
     required this.reference,
     required this.description,
     required this.categorie,
+    required this.imageUrl,
+    this.needsPrescription = false,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -28,6 +32,8 @@ class Product {
       reference: json['reference']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       categorie: json['categorie']?.toString() ?? '',
+      imageUrl: json['image_url']?.toString() ?? 'https://via.placeholder.com/150',
+      needsPrescription: json['needs_prescription'] == 1 || json['needs_prescription'] == true,
     );
   }
 
@@ -37,9 +43,10 @@ class Product {
         'quantite': quantite,
         'description': description,
         'categorie': categorie,
+        'image_url': imageUrl,
+        'needs_prescription': needsPrescription ? 1 : 0,
       };
 
-  /// Statut d'affichage, même logique que public/html/stock.html
   StockStatus get status {
     if (quantite >= 100) return StockStatus.enStock;
     if (quantite > 0) return StockStatus.faible;

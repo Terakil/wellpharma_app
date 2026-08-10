@@ -6,7 +6,7 @@ import '../auth/login_screen.dart';
 import '../shared/api_settings_screen.dart';
 import '../shared/help_screen.dart';
 import '../shared/settings_screen.dart';
-import 'event_screen.dart';
+import 'order_history_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -18,13 +18,27 @@ class ProfileScreen extends StatelessWidget {
     final textDim = isDark ? AppColors.textDimDark : AppColors.textDimLight;
     
     return Scaffold(
-      appBar: AppBar(title: const Text('Mon profil')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset('assets/images/logo.png', height: 40),
+            const SizedBox(width: 8),
+            Image.asset('assets/images/logo2.png', height: 40),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Image.asset('assets/images/logo_ispm.png', height: 40),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           CircleAvatar(
             radius: 36,
-            backgroundColor: AppColors.primary.withOpacity(0.15),
+            backgroundColor: AppColors.primary.withValues(alpha: 0.15),
             child: const Icon(Icons.person, size: 36, color: AppColors.primary),
           ),
           const SizedBox(height: 12),
@@ -51,11 +65,11 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.event_outlined, color: AppColors.primary),
-                  title: const Text('Événements'),
+                  leading: const Icon(Icons.history_outlined, color: AppColors.primary),
+                  title: const Text('Historique d\'achats'),
                   trailing: Icon(Icons.chevron_right, color: textDim),
                   onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const EventScreen()),
+                    MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
                   ),
                 ),
                 const Divider(height: 1),

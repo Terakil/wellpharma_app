@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/theme.dart';
 import '../../services/session_service.dart';
 import '../../services/theme_service.dart';
@@ -13,6 +16,41 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  String? _profileImagePath;
+  final _nameCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _profileImagePath = prefs.getString('profile_image_path');
+      _nameCtrl.text = prefs.getString('user_display_name') ?? '';
+    });
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('profile_image_path', picked.path);
+      setState(() => _profileImagePath = picked.path);
+    }
+  }
+
+  Future<void> _saveProfileName() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_display_name', _nameCtrl.text.trim());
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profil mis à jour !')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final session = context.watch<SessionService>();
@@ -25,7 +63,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Paramètres"),
+        title: Row(
+          children: [
+            Image.asset('assets/images/logo.png', height: 40),
+            const SizedBox(width: 8),
+            Image.asset('assets/images/logo2.png', height: 40),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Image.asset('assets/images/logo_ispm.png', height: 40),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -40,17 +90,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: AppColors.primary,
-                    child: Text(
-                      (session.email?.isNotEmpty == true ? session.email![0] : "U").toUpperCase(),
-                      style: const TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: AppColors.primary,
+                        backgroundImage: _profileImagePath != null ? FileImage(File(_profileImagePath!)) : null,
+                        child: _profileImagePath == null 
+                          ? const Icon(Icons.person, size: 50, color: Colors.white)
+                          : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _pickImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(color: AppColors.accentBlue, shape: BoxShape.circle),
+                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 15),
                   Text(
-                    session.email?.split('@').first ?? "Utilisateur",
+                    _nameCtrl.text.isNotEmpty ? _nameCtrl.text : (session.email?.split('@').first ?? "Utilisateur"),
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textMain),
                   ),
                   Text(
@@ -63,6 +129,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 20),
             
             _buildSettingsGroup(
+              "Mon Profil",
+              [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _nameCtrl,
+                        decoration: const InputDecoration(labelText: 'Nom d\'affichage', hintText: 'Entrez votre nom'),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(onPressed: _saveProfileName, child: const Text('Enregistrer le nom')),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              isDark,
+            ),
+
+            _buildSettingsGroup(
               "Apparence",
               [
                 SwitchListTile(
@@ -70,26 +159,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text("Mode Sombre", style: TextStyle(color: textMain, fontWeight: FontWeight.w500)),
                   value: isDark,
                   onChanged: (bool value) => theme.toggleTheme(),
-                ),
-              ],
-              isDark,
-            ),
-
-            _buildSettingsGroup(
-              "Compte",
-              [
-                _buildSettingsTile(
-                  icon: Icons.person_outline,
-                  title: "Mon Profil",
-                  onTap: () {},
-                  isDark: isDark,
-                ),
-                _buildSettingsTile(
-                  icon: Icons.email_outlined,
-                  title: "Email",
-                  subtitle: session.email,
-                  trailing: const SizedBox.shrink(),
-                  isDark: isDark,
                 ),
               ],
               isDark,
@@ -102,12 +171,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.help_outline,
                   title: "Aide & FAQ",
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen())),
-                  isDark: isDark,
-                ),
-                _buildSettingsTile(
-                  icon: Icons.info_outline,
-                  title: "À propos",
-                  onTap: () {},
                   isDark: isDark,
                 ),
                 _buildSettingsTile(
@@ -144,7 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           decoration: BoxDecoration(
             color: bgSide,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.05)),
+            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.05)),
           ),
           child: Column(children: children),
         ),

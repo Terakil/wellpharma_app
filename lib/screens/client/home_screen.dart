@@ -5,9 +5,11 @@ import '../../models/product.dart';
 import '../../services/api_service.dart';
 import '../../services/cart_service.dart';
 import '../../widgets/product_card.dart';
+import 'client_shell.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final bool focusSearch;
+  const HomeScreen({super.key, this.focusSearch = false});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -15,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _api = ApiService();
+  final _searchFocus = FocusNode();
   String _query = '';
   String _selectedCategory = 'Tous';
   late Future<List<Product>> _future;
@@ -32,6 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _future = _api.getStock();
+    if (widget.focusSearch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_searchFocus);
+      });
+    }
   }
 
   void _reload() => setState(() => _future = _api.getStock());
@@ -49,14 +57,27 @@ class _HomeScreenState extends State<HomeScreen> {
           slivers: [
             SliverAppBar(
               floating: true,
-              title: const Text('WellPharma', style: TextStyle(fontWeight: FontWeight.w800)),
+              title: Row(
+                children: [
+                  Image.asset('assets/images/logo.png', height: 40),
+                  const SizedBox(width: 8),
+                  Image.asset('assets/images/logo2.png', height: 40),
+                ],
+              ),
               actions: [
                 Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Image.asset('assets/images/logo_ispm.png', height: 40),
+                ),
+                Padding(
                   padding: const EdgeInsets.only(right: 16),
-                  child: Badge(
-                    label: Text('${cart.itemCount}'),
-                    isLabelVisible: cart.itemCount > 0,
-                    child: const Icon(Icons.shopping_basket_outlined),
+                  child: GestureDetector(
+                    onTap: () => AppShell.of(context)?.setIndex(2),
+                    child: Badge(
+                      label: Text('${cart.itemCount}'),
+                      isLabelVisible: cart.itemCount > 0,
+                      child: const Icon(Icons.shopping_basket_outlined),
+                    ),
                   ),
                 ),
               ],
@@ -75,8 +96,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(color: textDim, fontSize: 13),
                     ),
                     const SizedBox(height: 20),
-                    // Search Bar
                     TextField(
+                      focusNode: _searchFocus,
                       onChanged: (v) => setState(() => _query = v.toLowerCase()),
                       decoration: InputDecoration(
                         hintText: 'Rechercher un médicament...',
@@ -85,7 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Clickable Categories with Icons
                     SizedBox(
                       height: 50,
                       child: ListView.separated(
@@ -156,18 +176,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisCount: 2,
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 14,
-                      childAspectRatio: 0.75,
+                      childAspectRatio: 0.70,
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (context, i) {
                         final p = products[i];
                         return ProductCard(
-                          name: p.designation,
-                          category: p.categorie,
-                          desc: p.description,
-                          price: p.prixUnitaire,
+                          product: p,
                           onAdd: () {
-                            context.read<CartService>().add(p.designation, p.categorie, p.prixUnitaire);
+                            context.read<CartService>().add(p.designation, p.categorie, p.prixUnitaire, p.needsPrescription, p.quantite);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('${p.designation} ajouté au panier')),
                             );

@@ -13,7 +13,19 @@ class HelpScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Aide & FAQ"),
+        title: Row(
+          children: [
+            Image.asset('assets/images/logo.png', height: 40),
+            const SizedBox(width: 8),
+            Image.asset('assets/images/logo2.png', height: 40),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Image.asset('assets/images/logo_ispm.png', height: 40),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -26,41 +38,34 @@ class HelpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Comment pouvons-nous vous aider ?",
+              "Découvrez les fonctionnalités de votre application.",
               style: TextStyle(fontSize: 16, color: textDim),
             ),
             const SizedBox(height: 30),
             _buildFaqItem(
-              "Comment passer une commande ?",
-              "Pour passer une commande, sélectionnez le produit souhaité, cliquez sur \"Ajouter au panier\", puis rendez-vous dans votre panier pour finaliser.",
-              bgSide,
-              textMain,
-              textDim,
-              isDark,
+              "Recherche et Catégories",
+              "Utilisez la barre de recherche en haut de l'accueil ou cliquez sur l'onglet 'Recherche' en bas pour trouver un médicament. Vous pouvez aussi filtrer par catégorie en cliquant sur les boutons (Antibiotique, Vitamines, etc.).",
+              bgSide, textMain, textDim, isDark,
             ),
             _buildFaqItem(
-              "Comment modifier mes informations personnelles ?",
-              "Allez dans \"Paramètres\" pour mettre à jour votre nom ou d'autres informations de profil.",
-              bgSide,
-              textMain,
-              textDim,
-              isDark,
+              "Commande et Panier",
+              "Ajoutez des produits au panier via le bouton '+'. Le bouton panier en haut à droite (ou l'onglet en bas) vous permet de voir vos articles et de valider votre achat.",
+              bgSide, textMain, textDim, isDark,
             ),
             _buildFaqItem(
-              "Comment activer ou désactiver les notifications ?",
-              "Dans \"Paramètres\", vous trouverez prochainement les options pour gérer vos notifications.",
-              bgSide,
-              textMain,
-              textDim,
-              isDark,
+              "Scan d'Ordonnance",
+              "Pour certains médicaments sensibles (ex: Augmentin), un scan d'ordonnance est obligatoire lors du paiement. L'IA vérifiera la validité du document via votre caméra.",
+              bgSide, textMain, textDim, isDark,
             ),
             _buildFaqItem(
-              "Que faire si je rencontre un problème avec ma commande ?",
-              "Contactez notre support via le formulaire de contact disponible ou envoyez un email à support@wellpharma.com.",
-              bgSide,
-              textMain,
-              textDim,
-              isDark,
+              "Gestion du Stock",
+              "Chaque achat validé diminue automatiquement le stock réel dans la base de données MySQL de la pharmacie.",
+              bgSide, textMain, textDim, isDark,
+            ),
+            _buildFaqItem(
+              "Thème et Profil",
+              "Dans les paramètres, vous pouvez basculer entre le mode clair et sombre, changer votre photo de profil (Galerie) et mettre à jour votre nom d'affichage.",
+              bgSide, textMain, textDim, isDark,
             ),
             const SizedBox(height: 40),
             Center(
@@ -89,7 +94,7 @@ class HelpScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgSide,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.05)),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

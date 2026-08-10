@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../models/product.dart';
+import '../models/cart_item.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -54,6 +55,27 @@ class ApiService {
     }
   }
 
+  Future<bool> register({required String name, required String email, required String password}) async {
+    try {
+      final res = await http
+          .post(
+            Uri.parse('$_base/api/signup'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'nom': name, 'email': email, 'motdepasse': password}),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      final data = jsonDecode(res.body) as Map<String, dynamic>;
+      if (res.statusCode == 200 || data['success'] == true) {
+        return true;
+      }
+      throw ApiException(data['message']?.toString() ?? 'Erreur lors de l\'inscription');
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Erreur lors de la création du compte sur $_base. Vérifie que la route /api/signup existe.');
+    }
+  }
+
   Future<List<Product>> getStock() async {
     try {
       final res = await http
@@ -95,6 +117,44 @@ class ApiService {
       rethrow;
     } catch (e) {
       throw ApiException('Impossible d\'ajouter le produit ($_base).');
+    }
+  }
+
+  Future<void> processOrder(List<CartItem> items, String email) async {
+    try {
+      final res = await http
+          .post(
+            Uri.parse('$_base/api/commander'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'items': items.map((i) => {'name': i.name, 'quantity': i.quantity}).toList(),
+              'email': email,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      final data = jsonDecode(res.body) as Map<String, dynamic>;
+      if (res.statusCode != 200 || data['success'] != true) {
+        throw ApiException(data['message']?.toString() ?? 'Échec de la commande');
+      }
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Erreur lors de la validation de la commande.');
+    }
+  }
+
+  Future<List<dynamic>> getOrderHistory(String email) async {
+    try {
+      final res = await http
+          .get(Uri.parse('$_base/api/historique?email=$email'))
+          .timeout(const Duration(seconds: 10));
+      
+      if (res.statusCode != 200) {
+        throw ApiException('Erreur serveur (${res.statusCode})');
+      }
+      return jsonDecode(res.body) as List<dynamic>;
+    } catch (e) {
+      throw ApiException('Impossible de charger l\'historique.');
     }
   }
 }

@@ -5,6 +5,7 @@ import '../../services/api_service.dart';
 import '../../services/session_service.dart';
 import '../client/client_shell.dart';
 import '../shared/api_settings_screen.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -67,20 +68,29 @@ class _LoginScreenState extends State<LoginScreen> {
               width: 300,
               height: 300,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
             ),
           ),
           SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Spacer(),
-                  const Icon(Icons.local_pharmacy, size: 48, color: AppColors.primary),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 60),
+                  // Logos au lancement
+                  Row(
+                    children: [
+                      Image.asset('assets/images/logo.png', height: 60),
+                      const SizedBox(width: 12),
+                      Image.asset('assets/images/logo2.png', height: 60),
+                      const Spacer(),
+                      Image.asset('assets/images/logo_ispm.png', height: 50),
+                    ],
+                  ),
+                  const SizedBox(height: 48),
                   Text(
                     'Bienvenue sur\nWellPharma',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, height: 1.1, color: textMain),
@@ -134,11 +144,31 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextButton.styleFrom(foregroundColor: textDim),
                     ),
                   ),
-                  const Spacer(flex: 2),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SignupScreen()),
+                      ),
+                      child: Text.rich(
+                        TextSpan(
+                          text: 'Pas encore de compte ? ',
+                          style: TextStyle(color: textDim),
+                          children: const [
+                            TextSpan(
+                              text: 'Créer un compte',
+                              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
                   Center(
                     child: Text(
                       '© 2026 WellPharma Madagascar',
-                      style: TextStyle(color: textDim.withOpacity(0.5), fontSize: 12),
+                      style: TextStyle(color: textDim.withValues(alpha: 0.5), fontSize: 12),
                     ),
                   ),
                 ],
