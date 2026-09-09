@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../services/api_service.dart';
 import '../../services/session_service.dart';
+import '../../widgets/circular_logo.dart';
 import '../client/client_shell.dart';
 import '../shared/api_settings_screen.dart';
 import 'signup_screen.dart';
@@ -83,11 +84,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Logos au lancement
                   Row(
                     children: [
-                      Image.asset('assets/images/logo.png', height: 60),
+                      const CircularLogo(assetPath: 'assets/images/logo.png', size: 70),
                       const SizedBox(width: 12),
                       Image.asset('assets/images/logo2.png', height: 60),
                       const Spacer(),
-                      Image.asset('assets/images/logo_ispm.png', height: 50),
+                      const CircularLogo(assetPath: 'assets/images/logo_ispm.png', size: 60),
                     ],
                   ),
                   const SizedBox(height: 48),

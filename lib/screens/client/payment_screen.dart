@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../services/api_service.dart';
 import '../../services/cart_service.dart';
-import '../../services/invoice_service.dart';
 import '../../services/scan_service.dart';
 import '../../services/session_service.dart';
+import '../../widgets/circular_logo.dart';
+import '../../models/cart_item.dart';
+import 'invoice_receipt_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -63,15 +65,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/logo.png', height: 40),
+            const CircularLogo(assetPath: 'assets/images/logo.png', size: 45),
             const SizedBox(width: 8),
             Image.asset('assets/images/logo2.png', height: 40),
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Image.asset('assets/images/logo_ispm.png', height: 40),
+          const Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: CircularLogo(assetPath: 'assets/images/logo_ispm.png', size: 40),
           ),
         ],
       ),
@@ -153,11 +155,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     if (!mounted) return;
                     Navigator.pop(context);
 
-                    await InvoiceService.generateAndPrintInvoice(cart.items, cart.total.toDouble());
+                    // Navigation vers la nouvelle interface de facture image
+                    final items = List<CartItem>.from(cart.items);
+                    final total = cart.total.toDouble();
                     
                     cart.clear();
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Commande validée et stock mis à jour !")));
+                    
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => InvoiceReceiptScreen(items: items, total: total),
+                      ),
+                    );
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Commande validée !")));
                   } catch (e) {
                     if (!mounted) return;
                     Navigator.pop(context);

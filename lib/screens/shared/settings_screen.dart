@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/theme.dart';
 import '../../services/session_service.dart';
 import '../../services/theme_service.dart';
+import '../../widgets/circular_logo.dart';
 import 'help_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -65,15 +66,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/logo.png', height: 40),
+            const CircularLogo(assetPath: 'assets/images/logo.png', size: 45),
             const SizedBox(width: 8),
             Image.asset('assets/images/logo2.png', height: 40),
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Image.asset('assets/images/logo_ispm.png', height: 40),
+          const Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: CircularLogo(assetPath: 'assets/images/logo_ispm.png', size: 40),
           ),
         ],
       ),

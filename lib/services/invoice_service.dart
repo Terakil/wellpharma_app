@@ -29,33 +29,33 @@ class InvoiceService {
         margin: const pw.EdgeInsets.all(10),
         build: (pw.Context context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
+              // Logos à la normale (non circulaires pour la facture)
               pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: pw.MainAxisAlignment.center,
                 children: [
-                  pw.Row(
-                    children: [
-                      pw.Image(logoImage, height: 20),
-                      pw.SizedBox(width: 4),
-                      pw.Image(logo2Image, height: 20),
-                    ],
-                  ),
-                  pw.Image(logoIspmImage, height: 20),
+                  pw.Image(logoImage, height: 30),
+                  pw.SizedBox(width: 8),
+                  pw.Image(logo2Image, height: 30),
+                  pw.SizedBox(width: 8),
+                  pw.Image(logoIspmImage, height: 30),
                 ],
               ),
               pw.SizedBox(height: 10),
-              pw.Center(
-                child: pw.Column(
-                  children: [
-                    pw.Text("Votre santé, notre priorité", style: const pw.TextStyle(fontSize: 8)),
-                    pw.SizedBox(height: 5),
-                    pw.Text("TICKET DE CAISSE", style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
-                    pw.Divider(thickness: 0.5),
-                  ],
-                ),
+              pw.Column(
+                children: [
+                  pw.Text("WELLPHARMA", style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: PdfColors.green)),
+                  pw.Text("Votre santé, notre priorité", style: const pw.TextStyle(fontSize: 8)),
+                  pw.SizedBox(height: 5),
+                  pw.Text("TICKET DE CAISSE", style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                  pw.Divider(thickness: 0.5),
+                ],
               ),
-              pw.Text("Date: $dateStr", style: const pw.TextStyle(fontSize: 8)),
+              pw.Container(
+                alignment: pw.Alignment.centerLeft,
+                child: pw.Text("Date: $dateStr", style: const pw.TextStyle(fontSize: 8)),
+              ),
               pw.SizedBox(height: 10),
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -94,8 +94,8 @@ class InvoiceService {
                 child: pw.BarcodeWidget(
                   barcode: pw.Barcode.code128(),
                   data: 'WP-${now.millisecondsSinceEpoch}',
-                  width: 60,
-                  height: 20,
+                  width: 80,
+                  height: 30,
                 ),
               ),
             ],
@@ -104,6 +104,11 @@ class InvoiceService {
       ),
     );
 
-    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf.save());
+    // On force le format Petit Ticket (80mm) dans l'appel à Printing.layoutPdf
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'Ticket_WellPharma_${now.millisecondsSinceEpoch}',
+      format: PdfPageFormat.roll80,
+    );
   }
 }

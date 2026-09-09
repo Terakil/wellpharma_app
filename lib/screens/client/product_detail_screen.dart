@@ -139,6 +139,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      
+                      // Besoin d'ordonnance
+                      Row(
+                        children: [
+                          Icon(
+                            currentProduct.needsPrescription ? Icons.assignment_late_outlined : Icons.assignment_turned_in_outlined,
+                            size: 16,
+                            color: currentProduct.needsPrescription ? AppColors.accentRed : AppColors.accentBlue,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            currentProduct.needsPrescription ? "Ordonnance OBLIGATOIRE" : "Sans ordonnance",
+                            style: TextStyle(
+                              color: currentProduct.needsPrescription ? AppColors.accentRed : AppColors.accentBlue,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
                       
                       const SizedBox(height: 32),
                       

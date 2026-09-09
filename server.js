@@ -191,5 +191,11 @@ app.listen(port, () => {
   console.log(`=========================================`);
   console.log(`🚀 Serveur WellPharma lancé sur le port ${port}`);
   console.log(`🔌 Connexion MySQL : localhost / pharmacie_db`);
+  console.log(`📡 URL API : http://localhost:${port}/api`);
   console.log(`=========================================`);
+});
+
+// Capture des erreurs non gérées pour éviter le crash silencieux
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Rejet non géré à :', promise, 'raison :', reason);
 });
