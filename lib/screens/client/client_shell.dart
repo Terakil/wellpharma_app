@@ -30,6 +30,14 @@ class AppShellState extends State<AppShell> {
     setState(() => _index = index);
   }
 
+  void _onTap(int i) {
+    if (i == _index) {
+      // Si on tape sur l'onglet déjà actif, on peut forcer un rafraîchissement
+      // (Optionnel : implémenter une communication vers HomeScreen ici)
+    }
+    setState(() => _index = i);
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartService>();
@@ -38,7 +46,7 @@ class AppShellState extends State<AppShell> {
       body: IndexedStack(index: _index, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
+        onTap: _onTap,
         items: [
           const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Accueil'),
           const BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: 'Recherche'),

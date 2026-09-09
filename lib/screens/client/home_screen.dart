@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _api = ApiService();
   final _searchFocus = FocusNode();
   String _query = '';
@@ -35,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _future = _api.getStock();
     if (widget.focusSearch) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,7 +44,25 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _reload() => setState(() => _future = _api.getStock());
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _searchFocus.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _reload();
+    }
+  }
+
+  void _reload() {
+    if (mounted) {
+      setState(() => _future = _api.getStock());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +73,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async => _reload(),
+        displacement: 40,
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
               floating: true,
+              pinned: true,
               title: Row(
                 children: [
                   const CircularLogo(assetPath: 'assets/images/logo.png', size: 45),
@@ -66,6 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _reload,
+                  tooltip: "Actualiser",
+                ),
                 const Padding(
                   padding: EdgeInsets.only(right: 8),
                   child: CircularLogo(assetPath: 'assets/images/logo_ispm.png', size: 40),

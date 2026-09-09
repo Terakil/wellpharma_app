@@ -102,25 +102,16 @@ class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    "WELLPHARMA",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.primary,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const Text(
                     "Votre santé, notre priorité",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: Colors.black54),
                   ),
-                  const Divider(height: 32, thickness: 1),
+                  const Divider(height: 32, thickness: 1, color: Colors.black12),
                   const Text(
                     "TICKET DE CAISSE",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   const SizedBox(height: 8),
-                  Text("Date : $dateStr", style: const TextStyle(fontSize: 12)),
+                  Text("Date : $dateStr", style: const TextStyle(fontSize: 12, color: Colors.black87)),
                   const SizedBox(height: 24),
                   
                   // Liste des articles
@@ -132,18 +123,18 @@ class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
                         Expanded(
                           child: Text(
                             "${item.name} x${item.quantity}",
-                            style: const TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14, color: Colors.black87),
                           ),
                         ),
                         Text(
                           "${item.total.toStringAsFixed(0)} Ar",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                       ],
                     ),
                   )),
                   
-                  const Divider(height: 32, thickness: 1),
+                  const Divider(height: 32, thickness: 1, color: Colors.black12),
                   
                   // Total
                   Row(
@@ -151,7 +142,7 @@ class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
                     children: [
                       const Text(
                         "TOTAL",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
                       ),
                       Text(
                         "${widget.total.toStringAsFixed(0)} Ar",
@@ -167,7 +158,7 @@ class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
                   const SizedBox(height: 32),
                   const Text(
                     "Merci de votre visite !",
-                    style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                    style: TextStyle(fontStyle: FontStyle.italic, color: Colors.black54),
                   ),
                   const SizedBox(height: 16),
                   
@@ -180,7 +171,7 @@ class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Center(
-                      child: Text("|| ||| | || |||| | ||", style: TextStyle(letterSpacing: 4, fontWeight: FontWeight.bold)),
+                      child: Text("|| ||| | || |||| | ||", style: TextStyle(letterSpacing: 4, fontWeight: FontWeight.bold, color: Colors.black)),
                     ),
                   ),
                 ],
