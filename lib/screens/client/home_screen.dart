@@ -88,11 +88,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ],
               ),
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: _reload,
-                  tooltip: "Actualiser",
-                ),
                 const Padding(
                   padding: EdgeInsets.only(right: 8),
                   child: CircularLogo(assetPath: 'assets/images/logo_ispm.png', size: 40),

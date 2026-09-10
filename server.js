@@ -141,6 +141,16 @@ app.post('/api/commander', asyncHandler(async (req, res) => {
         'INSERT INTO commandes (id_produit, quantite, prix_total, acheteur) VALUES (?, ?, ?, ?)',
         [product.id_produit, item.quantity, prixTotal, email]
       );
+
+      // 5. Enregistrer également le mouvement dans la table mouvements_produits
+      try {
+        await connection.query(
+          "INSERT INTO mouvements_produits (id_produit, type_mouvement, quantite, date_mouvement) VALUES (?, 'Vente', ?, NOW())",
+          [product.id_produit, item.quantity]
+        );
+      } catch (movError) {
+        console.error("⚠️ Impossible d'insérer dans mouvements_produits:", movError.message);
+      }
     }
 
     await connection.commit();

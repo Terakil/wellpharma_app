@@ -26,6 +26,17 @@ class InvoiceReceiptScreen extends StatefulWidget {
 class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
   final GlobalKey _boundaryKey = GlobalKey();
 
+  @override
+  void initState() {
+    super.initState();
+    // Déclenchement automatique du téléchargement dès l'arrivée sur l'écran
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _captureAndSave();
+      });
+    });
+  }
+
   Future<void> _captureAndSave() async {
     try {
       RenderRepaintBoundary boundary = _boundaryKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
@@ -33,7 +44,7 @@ class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
       ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-      // Partage de l'image via le package Printing
+      // Partac'est ge de l'image via le package Printing
       await Printing.sharePdf(
         bytes: pngBytes,
         filename: 'Facture_WellPharma_${DateTime.now().millisecondsSinceEpoch}.png',
@@ -162,18 +173,8 @@ class _InvoiceReceiptScreenState extends State<InvoiceReceiptScreen> {
                   ),
                   const SizedBox(height: 16),
                   
-                  // Petit "faux" code barre pour le look
-                  Container(
-                    height: 40,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Center(
-                      child: Text("|| ||| | || |||| | ||", style: TextStyle(letterSpacing: 4, fontWeight: FontWeight.bold, color: Colors.black)),
-                    ),
-                  ),
+                  // Petit "faux" code barre pour le look (Enlevé pour supprimer les barres en bas de la facture)
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
